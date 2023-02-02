@@ -1,0 +1,56 @@
+name: Tests
+
+on: [ push, pull_request ]
+
+jobs:
+  lint-and-ut:
+    strategy:
+      matrix:
+        version: [ 1.18, 1.19 ]
+    runs-on: [ self-hosted, X64 ]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.version }}
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Golangci Lint
+        # https://golangci-lint.run/
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+      - name: Unit Test
+        run: go test -race -covermode=atomic -coverprofile=coverage.txt ./...
+
+      - name: Codecov
+        run: bash <(curl -s https://codecov.io/bash)
+
+  ut-windows:
+    strategy:
+      matrix:
+        version: [ 1.18, 1.19 ]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.version }}
+
+      - uses: actions/cache@v3
+        with:
+          path: $HOME/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Unit Test
+        run: go test -race -covermode=atomic  ./...
