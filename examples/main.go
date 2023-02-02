@@ -1,17 +1,3 @@
-# http2curl
-
-convert Request of [fasthttp](https://github.com/valyala/fasthttp) and [hertz](https://github.com/cloudwego/hertz) to CURL command line and fork from [moul/http2curl](https://github.com/moul/http2curl)
-
-
-# Install
-
-```shell
-go get github.com/li-jin-gou/http2curl
-```
-
-## Example
-
-```go
 package main
 
 import (
@@ -44,5 +30,3 @@ func main() {
 	fmt.Println(c)
 	// Output: curl -k -X 'POST' -d '{"a":"b"}' -H 'Content-Type: application/json' 'https://example.com/index' --compressed
 }
-
-```
