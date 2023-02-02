@@ -2,6 +2,7 @@ package http2curl
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/valyala/fasthttp"
@@ -33,18 +34,22 @@ func GetCurlCommandFastHttp(req *fasthttp.Request) (*CurlCommand, error) {
 	}
 
 	headers := make(map[string][]string)
+	keys := make([]string, 0)
 
 	req.Header.VisitAll(func(key, value []byte) {
 		_, ok := headers[b2s(key)]
 		if !ok {
+			keys = append(keys, b2s(key))
 			headers[b2s(key)] = []string{b2s(value)}
 		} else {
 			headers[b2s(key)] = append(headers[b2s(key)], b2s(value))
 		}
 	})
 
-	for key, values := range headers {
-		command.append("-H", bashEscape(fmt.Sprintf("%s: %s", key, strings.Join(values, " "))))
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		command.append("-H", bashEscape(fmt.Sprintf("%s: %s", key, strings.Join(headers[key], " "))))
 	}
 
 	command.append(bashEscape(requestURL))
