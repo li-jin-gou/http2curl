@@ -8,7 +8,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/protocol"
 )
 
-// GetCurlCommandHertz returns a CurlCommand corresponding to an http.Request
+// GetCurlCommandHertz returns a CurlCommand corresponding to an protocol.Request
 func GetCurlCommandHertz(req *protocol.Request) (*CurlCommand, error) {
 	if req.URI() == nil {
 		return nil, ErrorURINull

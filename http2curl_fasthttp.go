@@ -8,7 +8,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-// GetCurlCommandFastHttp returns a CurlCommand corresponding to an http.Request
+// GetCurlCommandFastHttp returns a CurlCommand corresponding to an fasthttp.Request
 func GetCurlCommandFastHttp(req *fasthttp.Request) (*CurlCommand, error) {
 	if req.URI() == nil {
 		return nil, ErrorURINull
