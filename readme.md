@@ -1,6 +1,6 @@
 # http2curl
 
-convert Request of [fasthttp](https://github.com/valyala/fasthttp) and [hertz](https://github.com/cloudwego/hertz) to CURL command line and fork from [moul/http2curl](https://github.com/moul/http2curl)
+convert Request of [fasthttp](https://github.com/valyala/fasthttp), [hertz](https://github.com/cloudwego/hertz) and net/http to CURL command line and fork from [moul/http2curl](https://github.com/moul/http2curl)
 
 
 # Install
@@ -9,21 +9,31 @@ convert Request of [fasthttp](https://github.com/valyala/fasthttp) and [hertz](h
 go get github.com/li-jin-gou/http2curl
 ```
 
-## Example
+## Usage
+
+
+### FastHttp
 
 ```go
-package main
+func FastHttpDemo() {
+	// fasthttp
+	var req fasthttp.Request
+	req.SetRequestURI("https://example.com/index")
+	req.Header.SetMethod(fasthttp.MethodPost)
+	req.SetBody([]byte(`{"a":"b"}`))
+	req.Header.Set("Content-Type", "application/json")
 
-import (
-	"fmt"
+	c, _ := http2curl.GetCurlCommandFastHttp(&req)
+	fmt.Println(c)
+	// Output: curl -k -X 'POST' -d '{"a":"b"}' -H 'Content-Type: application/json' 'https://example.com/index' --compressed
+}
 
-	"github.com/cloudwego/hertz/pkg/protocol"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
-	"github.com/li-jin-gou/http2curl"
-	"github.com/valyala/fasthttp"
-)
+```
 
-func main() {
+### Hertz
+
+```go
+func HertzDemo() {
 	// hertz
 	req := protocol.NewRequest(consts.MethodGet, "https://example.com/index", nil)
 	req.URI().QueryArgs().Add("a", "1")
@@ -32,17 +42,17 @@ func main() {
 	c, _ := http2curl.GetCurlCommandHertz(req)
 	fmt.Println(c)
 	// Output: curl -k -X 'GET' -H 'A: 2' -H 'Host: example.com' 'https://example.com/index?a=1&b=2' --compressed
+}
+```
 
-	// fasthttp
-	var req1 fasthttp.Request
-	req1.SetRequestURI("https://example.com/index")
-	req1.Header.SetMethod(fasthttp.MethodPost)
-	req1.SetBody([]byte(`{"a":"b"}`))
-	req1.Header.Set("Content-Type", "application/json")
+### net/http
 
-	c, _ = http2curl.GetCurlCommandFastHttp(&req1)
+```go
+func NetHttpDemo() {
+	req, _ := http.NewRequest(http.MethodPost, "https://example.com/index", bytes.NewBufferString(`{"a":"b"}`))
+	req.Header.Set("Content-Type", "application/json")
+	c, _ := http2curl.GetCurlCommand(req)
 	fmt.Println(c)
 	// Output: curl -k -X 'POST' -d '{"a":"b"}' -H 'Content-Type: application/json' 'https://example.com/index' --compressed
 }
-
 ```
