@@ -56,3 +56,20 @@ func NetHttpDemo() {
 	// Output: curl -k -X 'POST' -d '{"a":"b"}' -H 'Content-Type: application/json' 'https://example.com/index' --compressed
 }
 ```
+
+### Resty
+
+```go
+func RestyDemo() {
+	var req *resty.Request
+	client := resty.New()
+	resp, _ := client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody([]byte(`{"a":"b"}`)).
+		Post("https://example.com/index")
+	req = resp.Request
+	c, _ := http2curl.GetCurlCommandResty(req)
+	fmt.Println(c)
+	// Output: curl -k -X 'POST' -d '{"a":"b"}' -H 'Accept: application/json' -H 'Content-Type: application/json' -H 'User-Agent: go-resty/2.12.0 (https://github.com/go-resty/resty)' 'https://example.com/index' --compressed
+}
+```
